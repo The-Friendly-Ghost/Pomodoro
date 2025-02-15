@@ -2,9 +2,10 @@
 	import pauseIcon from '$assets/pause.svg';
 	import startIcon from '$assets/play.svg';
 	import restartIcon from '$assets/restart.svg';
-	import { fly } from 'svelte/transition';
 
 	const POMODORO_TIME = 25 * 60 * 1000;
+	const SHORT_BREAK_TIME = 5 * 60 * 1000;
+	const LONG_BREAK_TIME = 15 * 60 * 1000;
 	let name = $state('Start working');
 
 	// == Time variables
@@ -72,12 +73,12 @@
 			</div>
 		</div>
 		<div class="buttons-container">
-			<button onclick={handlePause} aria-label="Pause Timer"
-				><img src={pauseIcon} alt="Pause icon" /></button
-			>
-			<button onclick={handleStart} aria-label="Start Timer"
-				><img src={startIcon} alt="Start icon" /></button
-			>
+			<div class="flex flex-col items-center gap-4">
+				<button onclick={isRunning ? handlePause : handleStart} aria-label="Pause Timer"
+					><img src={isRunning ? pauseIcon : startIcon} alt="Pause icon" /></button
+				>
+				<div class=" h-2 w-2 rounded-full bg-[#bebebe] transition" class:glow={isRunning}></div>
+			</div>
 			<button onclick={resetTimer} aria-label="Restart Timer"
 				><img src={restartIcon} alt="Restart icon" /></button
 			>
@@ -115,6 +116,14 @@
 			inset -4px -4px 12px #ffffff;
 	}
 
+	.glow {
+		background: oklch(0.723 0.219 149.579);
+		box-shadow:
+			0 0 10px #22c55e,
+			0 0 20px #22c55e,
+			0 0 30px #22c55e;
+	}
+
 	.timer-outer {
 		position: relative;
 		height: 180px;
@@ -150,7 +159,7 @@
 	}
 
 	.timer-paused {
-		background: rgb(255, 122, 44);
+		background: rgb(255, 171, 44);
 		box-shadow: inset 0 0 8px rgba(126, 126, 126, 0.527);
 	}
 
@@ -186,7 +195,7 @@
 		justify-content: space-between;
 		width: 280px;
 		max-width: 100%;
-		height: 420px;
+		height: 450px;
 		padding: 50px;
 		border-radius: 50px;
 		background: #e0e0e0;
