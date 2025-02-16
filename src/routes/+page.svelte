@@ -1,22 +1,30 @@
-<script>
-	import { onMount } from 'svelte';
+<script lang="ts">
 	import Pomodoro from '$components/Pomodoro.svelte';
+	import ToggleNotifications from '$components/ToggleNotifications.svelte';
 
-	let notificationPermission = $state('default');
+	let notificationPermission: string = $state('default');
 
-	onMount(async () => {
+	async function askPermission() {
 		if ('Notification' in window) {
 			notificationPermission = await Notification.requestPermission();
 		}
-	});
+	}
 
-	const notifyUser = function (title, message) {
+	const notifyUser = function (title: string, message: string) {
 		if (notificationPermission === 'granted' && document.hidden) {
-			new Notification(title, {
-				body: message
+			const notification = new Notification(title, {
+				body: message,
+				requireInteraction: true
 			});
+
+			notification.onclick = function (event) {
+				event.preventDefault();
+				window.focus();
+				this.close();
+			};
 		}
 	};
 </script>
 
-<Pomodoro />
+<Pomodoro {notifyUser} />
+<ToggleNotifications {askPermission} {notificationPermission} />
